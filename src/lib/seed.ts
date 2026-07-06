@@ -2,56 +2,42 @@ import { db } from '@/lib/db/dexie-db';
 import { Role, SubscriptionType, SubscriptionStatus, PaymentMethod, Gender, MemberRole, SaleStatus } from '@/types/enums';
 
 export async function seedDatabase() {
-  const existingUsers = await db.users.toArray();
-  if (existingUsers.length > 0) return;
+  const existingMembers = await db.members.toArray();
+  if (existingMembers.length > 0) return;
 
   const now = new Date().toISOString();
   const today = now.split('T')[0];
 
-  const adminId = crypto.randomUUID();
-  await db.users.add({
-    id: adminId,
-    username: 'admin',
-    password: 'admin123',
-    role: Role.ADMIN,
-    active: true,
-    createdAt: now,
-  });
-
-  const receptionId = crypto.randomUUID();
-  await db.users.add({
-    id: receptionId,
-    username: 'reception',
-    password: 'reception123',
-    role: Role.RECEPTION,
-    active: true,
-    createdAt: now,
-  });
-
-  const sampleMembers = [
-    { firstName: 'Ahmed', lastName: 'Benali', gender: Gender.MALE, phone: '0555123456', email: 'ahmed@email.com', birthDate: '1990-03-15', subscriptionType: SubscriptionType.MONTHLY, subscriptionStatus: SubscriptionStatus.ACTIVE, memberRole: MemberRole.MEMBER, coach: false },
-    { firstName: 'Fatima', lastName: 'Ziani', gender: Gender.FEMALE, phone: '0666123456', email: 'fatima@email.com', birthDate: '1995-07-22', subscriptionType: SubscriptionType.QUARTERLY, subscriptionStatus: SubscriptionStatus.ACTIVE, memberRole: MemberRole.MEMBER, coach: false },
-    { firstName: 'Karim', lastName: 'Hadj', gender: Gender.MALE, phone: '0777123456', email: 'karim@email.com', birthDate: '1988-11-08', subscriptionType: SubscriptionType.ANNUAL, subscriptionStatus: SubscriptionStatus.ACTIVE, memberRole: MemberRole.COACH, coach: true },
-    { firstName: 'Sara', lastName: 'Mokhtar', gender: Gender.FEMALE, phone: '0555987654', email: 'sara@email.com', birthDate: '2000-01-30', subscriptionType: SubscriptionType.MONTHLY, subscriptionStatus: SubscriptionStatus.ACTIVE, memberRole: MemberRole.MEMBER, coach: false },
-    { firstName: 'Yacine', lastName: 'Bouaziz', gender: Gender.MALE, phone: '0666987654', email: 'yacine@email.com', birthDate: '1992-06-14', subscriptionType: SubscriptionType.SEMESTER, subscriptionStatus: SubscriptionStatus.ACTIVE, memberRole: MemberRole.MEMBER, coach: false },
+  const sampleMembers: { firstName: string; lastName: string; gender: Gender; phone: string; email: string; birthDate: string; subType: SubscriptionType; role: MemberRole }[] = [
+    { firstName: 'Ahmed', lastName: 'Benali', gender: Gender.MALE, phone: '0555123456', email: 'ahmed@email.com', birthDate: '1990-03-15', subType: SubscriptionType.MONTHLY, role: MemberRole.MEMBER },
+    { firstName: 'Fatima', lastName: 'Ziani', gender: Gender.FEMALE, phone: '0666123456', email: 'fatima@email.com', birthDate: '1995-07-22', subType: SubscriptionType.QUARTERLY, role: MemberRole.MEMBER },
+    { firstName: 'Karim', lastName: 'Hadj', gender: Gender.MALE, phone: '0777123456', email: 'karim@email.com', birthDate: '1988-11-08', subType: SubscriptionType.ANNUAL, role: MemberRole.COACH },
+    { firstName: 'Sara', lastName: 'Mokhtar', gender: Gender.FEMALE, phone: '0555987654', email: 'sara@email.com', birthDate: '2000-01-30', subType: SubscriptionType.MONTHLY, role: MemberRole.MEMBER },
+    { firstName: 'Yacine', lastName: 'Bouaziz', gender: Gender.MALE, phone: '0666987654', email: 'yacine@email.com', birthDate: '1992-06-14', subType: SubscriptionType.SEMESTER, role: MemberRole.MEMBER },
   ];
 
   for (const data of sampleMembers) {
     const endDate = new Date();
-    endDate.setMonth(endDate.getMonth() + { monthly: 1, quarterly: 3, semester: 6, annual: 12 }[data.subscriptionType]!);
+    endDate.setMonth(endDate.getMonth() + ({ monthly: 1, quarterly: 3, semester: 6, annual: 12, custom: 1 } as any)[data.subType]!);
     const memberId = crypto.randomUUID();
     await db.members.add({
       id: memberId,
-      ...data,
+      firstName: data.firstName,
+      lastName: data.lastName,
+      gender: data.gender,
+      phone: data.phone,
+      email: data.email,
+      birthDate: data.birthDate,
+      role: data.role,
       memberNumber: `QLF${String(Math.floor(1000 + Math.random() * 9000))}`,
       address: 'Alger',
-      registrationDate: today,
       subscription: {
-        type: data.subscriptionType,
-        status: data.subscriptionStatus,
+        type: data.subType,
+        status: SubscriptionStatus.ACTIVE,
         startDate: today,
         endDate: endDate.toISOString().split('T')[0],
-        monthlyRate: 5000,
+        price: 5000,
+        autoRenew: true,
       },
       createdAt: now,
       updatedAt: now,
@@ -80,24 +66,19 @@ export async function seedDatabase() {
     }
   }
 
-  const coach = (await db.members.toArray()).find(m => m.memberRole === MemberRole.COACH);
+  const coach = (await db.members.toArray()).find(m => m.role === MemberRole.COACH);
   if (coach) {
     const groupId = crypto.randomUUID();
-    await db.groups.add({
+    await db.coachGroups.add({
       id: groupId,
       name: 'Cardio Training',
-      description: 'Groupe cardio matinal',
       coachId: coach.id!,
-      schedule: 'Lun/Mer/Ven 8h-9h',
-      maxMembers: 15,
-      memberIds: [(await db.members.toArray()).filter(m => m.memberRole === MemberRole.MEMBER).slice(0, 3).map(m => m.id!)].flat(),
-      active: true,
       createdAt: now,
     });
   }
 
   const catId = crypto.randomUUID();
-  await db.productCategories.add({ id: catId, name: 'Nutrition', description: 'Compléments alimentaires', active: true, createdAt: now });
+  await db.productCategories.add({ id: catId, name: 'Nutrition', sortOrder: 0 });
 
   const products = [
     { name: 'Whey Protein 1kg', price: 4500, stock: 20 },
@@ -113,8 +94,10 @@ export async function seedDatabase() {
       name: p.name,
       price: p.price,
       stock: p.stock,
+      alertStock: 5,
       active: true,
       createdAt: now,
+      updatedAt: now,
     });
   }
 }

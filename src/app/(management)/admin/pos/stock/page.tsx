@@ -5,7 +5,7 @@ import { db } from '@/lib/db/dexie-db';
 import { AlertTriangle, Package } from 'lucide-react';
 
 export default function StockPage() {
-  const products = useLiveQuery(() => db.products.where('active').equals(true).toArray());
+  const products = useLiveQuery(() => db.products.filter(p => p.active).toArray());
   const categories = useLiveQuery(() => db.productCategories.toArray());
 
   const lowStock = (products || []).filter(p => p.stock <= p.alertStock);

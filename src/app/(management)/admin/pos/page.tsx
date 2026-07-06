@@ -8,7 +8,7 @@ import { ShoppingCart, Plus, Minus, Trash2, Search, CreditCard, Banknote, Smartp
 import { PaymentMethod, SaleStatus } from '@/types/enums';
 
 export default function POSPage() {
-  const products = useLiveQuery(() => db.products.where('active').equals(true).toArray());
+  const products = useLiveQuery(() => db.products.filter(p => p.active).toArray());
   const categories = useLiveQuery(() => db.productCategories.toArray());
 
   const [cart, setCart] = useState<{ productId: string; name: string; price: number; quantity: number }[]>([]);
@@ -29,7 +29,7 @@ export default function POSPage() {
   const discount = 0;
   const total = subtotal - discount;
 
-  const addToCart = (product: typeof products[0]) => {
+  const addToCart = (product: NonNullable<typeof products>[number]) => {
     setCart(prev => {
       const existing = prev.find(c => c.productId === product.id);
       if (existing) return prev.map(c => c.productId === product.id ? { ...c, quantity: c.quantity + 1 } : c);

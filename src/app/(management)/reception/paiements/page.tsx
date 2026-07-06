@@ -55,7 +55,7 @@ export default function ReceptionPaiementsPage() {
             </div>
             <div>
               <label className="block text-sm text-muted mb-1">Méthode</label>
-              <select value={form.method} onChange={e => setForm(f => ({ ...f, method: e.target.value }))} className="w-full px-3 py-2 bg-secondary border border-border rounded-lg text-foreground text-sm">
+              <select value={form.method} onChange={e => setForm(f => ({ ...f, method: e.target.value as PaymentMethod }))} className="w-full px-3 py-2 bg-secondary border border-border rounded-lg text-foreground text-sm">
                 <option value="cash">Espèces</option>
                 <option value="card">Carte</option>
                 <option value="transfer">Virement</option>

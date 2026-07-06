@@ -34,7 +34,7 @@ export default function PersonnelPage() {
     setShowForm(true);
   };
 
-  const toggleActive = async (p: typeof personnel[0]) => {
+  const toggleActive = async (p: NonNullable<typeof personnel>[number]) => {
     await db.personnel.update(p.id!, { active: !p.active });
   };
 
@@ -62,7 +62,7 @@ export default function PersonnelPage() {
             <div><label className="block text-sm text-muted mb-1">Email</label><input type="email" value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} className="w-full px-3 py-2 bg-secondary border border-border rounded-lg text-foreground text-sm" /></div>
             <div><label className="block text-sm text-muted mb-1">Téléphone</label><input type="tel" value={form.phone} onChange={e => setForm(f => ({ ...f, phone: e.target.value }))} className="w-full px-3 py-2 bg-secondary border border-border rounded-lg text-foreground text-sm" /></div>
             <div><label className="block text-sm text-muted mb-1">Rôle</label>
-              <select value={form.role} onChange={e => setForm(f => ({ ...f, role: e.target.value }))} className="w-full px-3 py-2 bg-secondary border border-border rounded-lg text-foreground text-sm">
+              <select value={form.role} onChange={e => setForm(f => ({ ...f, role: e.target.value as Role }))} className="w-full px-3 py-2 bg-secondary border border-border rounded-lg text-foreground text-sm">
                 <option value="admin">Administrateur</option>
                 <option value="reception">Réception</option>
               </select>

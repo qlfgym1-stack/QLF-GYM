@@ -41,7 +41,7 @@ export default function RetoursPage() {
     const allReturned = itemsToReturn.every(i => returnQtys[i.productId] >= i.quantity);
     const newStatus = allReturned ? SaleStatus.RETURNED : SaleStatus.PARTIALLY_RETURNED;
 
-    await db.sales.update(selectedSaleId, { status: newStatus, updatedAt: new Date().toISOString() });
+    await db.sales.update(selectedSaleId, { status: newStatus });
 
     for (const item of itemsToReturn) {
       const qty = returnQtys[item.productId] || 0;

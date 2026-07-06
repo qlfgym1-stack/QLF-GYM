@@ -8,7 +8,7 @@ export function canAccessModule(
 ): boolean {
   const permissions = PERMISSIONS[module];
   if (!permissions) return false;
-  const allowed = permissions[action] as readonly string[] | undefined;
+  const allowed = (permissions as any)[action] as readonly string[] | undefined;
   if (!allowed) return false;
   return allowed.includes(role);
 }

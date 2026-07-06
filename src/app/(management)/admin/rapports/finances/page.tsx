@@ -15,7 +15,7 @@ export default function RapportFinancesPage() {
     const revenueData = (payments || []).map(p => ({ Type: 'Abonnement', Montant: p.amount, Date: p.date, Méthode: p.method }));
     const salesData = (sales || []).map(s => ({ Type: 'Vente POS', Montant: s.total, Date: s.createdAt, Ticket: s.receiptNumber }));
     const expenseData = (expenses || []).map(e => ({ Type: 'Dépense', Montant: -e.amount, Date: e.date, Description: e.description }));
-    const coachData = (remunerations || []).filter(r => r.status === 'paid').map(r => ({ Type: 'Rémunération coach', Montant: -r.totalAmount, Période: r.period }));
+    const coachData = (remunerations || []).filter(r => r.status === 'paid').map(r => ({ Type: 'Rémunération coach', Montant: -r.totalAmount, Date: '', Période: r.period }));
 
     const all = [...revenueData, ...salesData, ...expenseData, ...coachData].sort((a, b) => (a.Date || '').localeCompare(b.Date || ''));
     const ws = XLSX.utils.json_to_sheet(all);

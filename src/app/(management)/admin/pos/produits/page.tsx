@@ -32,7 +32,7 @@ export default function ProductsPage() {
     await db.products.update(id, { active: false });
   };
 
-  const editProduct = (p: typeof products[0]) => {
+  const editProduct = (p: NonNullable<typeof products>[number]) => {
     setForm({ name: p.name, barcode: p.barcode || '', categoryId: p.categoryId, price: p.price, cost: p.cost || 0, stock: p.stock, alertStock: p.alertStock, supplier: p.supplier || '' });
     setEditing(p.id!);
     setShowForm(true);
@@ -119,7 +119,7 @@ export default function ProductsPage() {
               </div>
               <div className="flex items-center justify-between mt-2">
                 <span className="text-sm text-primary font-bold">{p.price} DA</span>
-                {p.cost > 0 && <span className="text-xs text-muted">Marge: {Math.round((p.price - p.cost) / p.price * 100)}%</span>}
+                {p.cost != null && p.cost > 0 && <span className="text-xs text-muted">Marge: {Math.round((p.price - p.cost) / p.price * 100)}%</span>}
               </div>
             </div>
           );

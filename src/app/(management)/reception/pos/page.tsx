@@ -8,14 +8,14 @@ import { ShoppingCart, Plus, Minus, Trash2, Search, Banknote, CreditCard } from 
 import { PaymentMethod, SaleStatus } from '@/types/enums';
 
 export default function ReceptionPOSPage() {
-  const products = useLiveQuery(() => db.products.where('active').equals(true).toArray());
+  const products = useLiveQuery(() => db.products.filter(p => p.active).toArray());
   const [cart, setCart] = useState<{ productId: string; name: string; price: number; quantity: number }[]>([]);
   const [search, setSearch] = useState('');
 
   const filtered = (products || []).filter(p => !search || p.name.toLowerCase().includes(search.toLowerCase()));
   const total = useMemo(() => cart.reduce((s, i) => s + i.price * i.quantity, 0), [cart]);
 
-  const addToCart = (p: typeof products[0]) => {
+  const addToCart = (p: NonNullable<typeof products>[number]) => {
     setCart(prev => {
       const existing = prev.find(c => c.productId === p.id);
       if (existing) return prev.map(c => c.productId === p.id ? { ...c, quantity: c.quantity + 1 } : c);
