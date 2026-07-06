@@ -69,7 +69,7 @@ export default function CRMPage() {
             </div>
             <div>
               <label className="block text-sm text-muted mb-1">Type</label>
-              <select value={form.type} onChange={e => setForm(f => ({ ...f, type: e.target.value }))} className="w-full px-3 py-2 bg-secondary border border-border rounded-lg text-foreground text-sm">
+              <select value={form.type} onChange={e => setForm(f => ({ ...f, type: e.target.value as CRMInteractionType }))} className="w-full px-3 py-2 bg-secondary border border-border rounded-lg text-foreground text-sm">
                 {Object.entries(typeLabels).map(([key, label]) => (
                   <option key={key} value={key}>{label}</option>
                 ))}

@@ -19,7 +19,7 @@ export default function TourniquetsPage() {
     setSimulating(true);
     const membersWithCheckins = new Set((todayCheckins || []).filter(c => c.type === 'entry').map(c => c.memberId));
     const membersExited = new Set((todayCheckins || []).filter(c => c.type === 'exit').map(c => c.memberId));
-    const inside = [...membersWithCheckins].filter(id => !membersExited.has(id));
+    const inside = new Set([...membersWithCheckins].filter(id => !membersExited.has(id)));
 
     const available = (members || []).filter(m => !inside.has(m.id!));
     if (available.length === 0) {

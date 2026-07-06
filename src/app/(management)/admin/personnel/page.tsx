@@ -28,7 +28,7 @@ export default function PersonnelPage() {
     resetForm();
   };
 
-  const editPerson = (p: typeof personnel[0]) => {
+  const editPerson = (p: NonNullable<typeof personnel>[number]) => {
     setForm({ firstName: p.firstName, lastName: p.lastName, email: p.email, phone: p.phone, role: p.role as Role, contractType: p.contractType || '', salary: p.salary || 0, hireDate: p.hireDate });
     setEditing(p.id!);
     setShowForm(true);

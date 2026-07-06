@@ -79,7 +79,7 @@ export default function CoachGroupesPage() {
             const coach = (coaches || []).find(c => c.id === g.coachId);
             const count = (groupMembers || []).filter(gm => gm.groupId === g.id).length;
             return (
-              <div key={g.id} className={`p-3 rounded-lg border cursor-pointer transition-colors flex items-center justify-between ${selectedGroup === g.id ? 'bg-primary/10 border-primary' : 'bg-card border-border hover:bg-card-hover'}`} onClick={() => setSelectedGroup(g.id)}>
+              <div key={g.id} className={`p-3 rounded-lg border cursor-pointer transition-colors flex items-center justify-between ${selectedGroup === g.id ? 'bg-primary/10 border-primary' : 'bg-card border-border hover:bg-card-hover'}`} onClick={() => setSelectedGroup(g.id!)}>
                 <div>
                   <p className="text-sm text-foreground font-medium">{g.name}</p>
                   <p className="text-xs text-muted">{coach?.firstName} {coach?.lastName} · {count} membres</p>
